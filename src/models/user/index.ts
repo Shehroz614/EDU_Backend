@@ -1,0 +1,386 @@
+import { Model, Schema, model } from 'mongoose';
+import { isDateNotMoreThanNMonthsInFuture } from '@helpers/index';
+import limits from '@constants/limits';
+import User from '@edugram/types/user';
+
+interface UserModel extends Model<User> {
+  getAuthorFields(): Object;
+}
+
+const UserSchema = new Schema<User, UserModel>(
+  {
+    _id: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      unique: true,
+      lowercase: true,
+      trim: true,
+      required: [true, '{PATH} is required'],
+    },
+    avatar: {
+      type: String,
+    },
+    first_name: {
+      type: String,
+      trim: true,
+      required: [true, '{PATH} is required'],
+      minlength: [limits.user.name.min, '{PATH} must be at-least {MINLENGTH} characters'],
+      maxlength: [limits.user.name.max, '{PATH} must be below {MAXLENGTH} characters'],
+    },
+    last_name: {
+      type: String,
+      trim: true,
+      minlength: [limits.user.name.min, '{PATH} must be at-least {MINLENGTH} characters'],
+      maxlength: [limits.user.name.max, '{PATH} must be below {MAXLENGTH} characters'],
+    },
+    date_of_birth: {
+      type: Date,
+      validate: {
+        validator(v: string) {
+          return isDateNotMoreThanNMonthsInFuture(v, 0);
+        },
+        message: 'Invalid Date of Birth',
+      },
+    },
+    city: {
+      type: String,
+    },
+    country: {
+      type: String,
+    },
+    website: {
+      type: String,
+    },
+    socials: {
+      type: [
+        {
+          name: String,
+          url: String,
+        },
+      ],
+    },
+    language: {
+      type: String,
+      enum: [
+        'ab',
+        'aa',
+        'af',
+        'ak',
+        'sq',
+        'am',
+        'ar',
+        'an',
+        'hy',
+        'as',
+        'av',
+        'ae',
+        'ay',
+        'az',
+        'bm',
+        'ba',
+        'eu',
+        'be',
+        'bn',
+        'bh',
+        'bi',
+        'bs',
+        'br',
+        'bg',
+        'my',
+        'ca',
+        'km',
+        'ch',
+        'ce',
+        'ny',
+        'zh',
+        'cu',
+        'cv',
+        'kw',
+        'co',
+        'cr',
+        'hr',
+        'cs',
+        'da',
+        'dv',
+        'nl',
+        'dz',
+        'en',
+        'eo',
+        'et',
+        'ee',
+        'fo',
+        'fj',
+        'fi',
+        'fr',
+        'ff',
+        'gd',
+        'gl',
+        'lg',
+        'ka',
+        'de',
+        'ki',
+        'el',
+        'kl',
+        'gn',
+        'gu',
+        'ht',
+        'ha',
+        'he',
+        'hz',
+        'hi',
+        'ho',
+        'hu',
+        'is',
+        'io',
+        'ig',
+        'id',
+        'ia',
+        'ie',
+        'iu',
+        'ik',
+        'ga',
+        'it',
+        'ja',
+        'jv',
+        'kn',
+        'kr',
+        'ks',
+        'kk',
+        'rw',
+        'kv',
+        'kg',
+        'ko',
+        'kj',
+        'ku',
+        'ky',
+        'lo',
+        'la',
+        'lv',
+        'lb',
+        'li',
+        'ln',
+        'lt',
+        'lu',
+        'mk',
+        'mg',
+        'ms',
+        'ml',
+        'mt',
+        'gv',
+        'mi',
+        'mr',
+        'mh',
+        'ro',
+        'mn',
+        'na',
+        'nv',
+        'nd',
+        'ng',
+        'ne',
+        'se',
+        'no',
+        'nb',
+        'nn',
+        'ii',
+        'oc',
+        'oj',
+        'or',
+        'om',
+        'os',
+        'pi',
+        'pa',
+        'ps',
+        'fa',
+        'pl',
+        'pt',
+        'qu',
+        'rm',
+        'rn',
+        'ru',
+        'sm',
+        'sg',
+        'sa',
+        'sc',
+        'sr',
+        'sn',
+        'sd',
+        'si',
+        'sk',
+        'sl',
+        'so',
+        'st',
+        'nr',
+        'es',
+        'su',
+        'sw',
+        'ss',
+        'sv',
+        'tl',
+        'ty',
+        'tg',
+        'ta',
+        'tt',
+        'te',
+        'th',
+        'bo',
+        'ti',
+        'to',
+        'ts',
+        'tn',
+        'tr',
+        'tk',
+        'tw',
+        'ug',
+        'uk',
+        'ur',
+        'uz',
+        've',
+        'vi',
+        'vo',
+        'wa',
+        'cy',
+        'fy',
+        'wo',
+        'xh',
+        'yi',
+        'yo',
+        'za',
+        'zu',
+      ],
+    },
+    email_subscription: {
+      type: Boolean,
+      default: false,
+    },
+    rank: {
+      type: Number,
+      default: 1,
+    },
+    wishlist: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Course',
+      },
+    ],
+    my_courses: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Course',
+      },
+    ],
+    in_cart: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Course',
+      },
+    ],
+    saved_items: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Course',
+      },
+    ],
+    purchased_courses: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Course',
+      },
+    ],
+    completed_courses: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Course',
+      },
+    ],
+    transactions: {
+      type: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: 'Transaction',
+        },
+      ],
+    },
+    reviews: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Review',
+      },
+    ],
+    search_history: [
+      {
+        type: String,
+      },
+    ],
+    visited_courses: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Course',
+      },
+    ],
+    notifications: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Notification',
+      },
+    ],
+    messages: [
+      {
+        type: String,
+      },
+    ],
+    payment_methods: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Payment',
+      },
+    ],
+    website_preferences: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'WebsitePreference',
+      },
+    ],
+    isAuthor: {
+      type: Boolean,
+      default: false,
+    },
+    isAuthorVerified: {
+      type: Boolean,
+      default: false,
+    },
+    stripeConnectedAccountId: {
+      type: String,
+    },
+    introduction: {
+      type: String,
+    },
+    introductoryVideo: {
+      type: String,
+    },
+    tosAcceptedAt: {
+      type: Date,
+      default: null,
+    },
+  },
+  {
+    timestamps: true,
+    _id: false,
+  },
+);
+UserSchema.set('toJSON', {
+  virtuals: true,
+});
+UserSchema.statics = {
+  getAuthorFields() {
+    return {
+      _id: 1,
+      first_name: 1,
+      last_name: 1,
+    };
+  },
+};
+
+export default model<User, UserModel>('User', UserSchema);

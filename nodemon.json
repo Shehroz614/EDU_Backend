@@ -1,0 +1,13 @@
+{
+  "watch": [
+    "./src",
+    "app.local.ts"
+  ],
+  "ext": ".ts,.js",
+  "ignore": [],
+  "exec": "npx ts-node ./app.local.ts",
+  "env": {
+    "AWS_DEFAULT_REGION": "us-east-1",
+    "IsProduction": "false"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "lib": ["esnext"],
+    "allowJs": true,
+    "outDir": "./build",
+    "rootDir": "./src",
+    "strict": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "downlevelIteration": true,
+    "skipLibCheck": true,
+    "typeRoots" : [
+      "./src/types",
+      "./node_modules/@types"
+    ],
+    "baseUrl": "./src/",
+    "paths": {
+      "@constants/*": ["./constants/*"],
+      "@database/*": ["./database/*"],
+      "@errors/*": ["./errors/*"],
+      "@helpers/*": ["./helpers/*"],
+      "@middlewares/*": ["./middlewares/*"],
+      "@models/*": ["./models/*"],
+      "@routes/*": ["./routes/*"],
+      "@services/*": ["./services/*"],
+      "@edugram/types/*": ["./types/*"],
+    },
+  },
+  "exclude": [
+    "build",
+    "dependencies",
+    "scripts",
+    "**/node_modules",
+    "src/doc",
+    "test",
+    "lambda.js",
+    "app.local.ts"
+  ],
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
+  },
+}

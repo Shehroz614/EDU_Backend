@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Firebase</title>
+</head>
+<body>
+	<!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+  	<script src="https://www.gstatic.com/firebasejs/8.1.2/firebase-app.js"></script>
+
+	<script src="https://www.gstatic.com/firebasejs/8.1.2/firebase-auth.js"></script>
+
+  	<script type="text/javascript">
+  		var firebaseConfig = {
+		  apiKey: 'AIzaSyCUkF407Gd-TloEoH_nQaKe1uChnOmuJoo',
+		  authDomain: 'ugu-academy.firebaseapp.com',
+		  databaseURL: 'https://ugu-academy.firebaseio.com',
+		  projectId: 'ugu-academy',
+		  storageBucket: 'ugu-academy.appspot.com',
+		  messagingSenderId: '578202162966',
+		  appId: '1:578202162966:web:972c2ef9273c5f2bc96237',
+		  measurementId: 'G-Z14KPQ8DGG',
+		}
+
+		// Initialize Firebase
+		firebase.initializeApp(firebaseConfig);
+
+		firebase.auth().signInWithEmailAndPassword("test123@gmail.com", "test1234")
+		  .then((user) => {
+		    firebase.auth().currentUser.getIdToken(true).then(function(idToken) {
+			  console.log(idToken);
+			}).catch(function(error) {
+			  // Handle error
+			});
+		  })
+		  .catch((error) => {
+		    var errorCode = error.code;
+		    var errorMessage = error.message;
+		  });
+  	</script>
+</body>
+</html>

@@ -1,0 +1,141 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Edugram Express Application/API powered by API Gateway and Lambda
+Parameters:
+  DomainName:
+    Type: String
+    Description: API Domain name
+    Default: ''
+  IsProduction:
+    Type: String
+    Description: Stack Environment
+    Default: 'false'
+  Stage:
+    Type: String
+    Description: Environment Stage
+    Default: 'main'
+
+Conditions:
+  UseDomainName: !Not
+    - !Equals
+      - !Ref DomainName
+      - ''
+
+Resources:
+  ExpressApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: !Ref Stage
+      BinaryMediaTypes: ['*/*']
+
+  ExpressLambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./build
+      Handler: lambda.handler
+      MemorySize: 1024
+      Runtime: nodejs18.x
+      Timeout: 30
+      Layers:
+        - !Ref ExpressLambdaLayer
+      Policies:
+        - SecretsManagerReadWrite
+        - AWSLambdaBasicExecutionRole
+      Environment:
+        Variables:
+          IsProduction: !Ref IsProduction
+      Events:
+        ProxyApiRoot:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ExpressApi
+            Path: /
+            Method: ANY
+        ProxyApiGreedy:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ExpressApi
+            Path: /{proxy+}
+            Method: ANY
+
+  ExpressLambdaLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: edugram-dependencies
+      Description: Edugram express app node dependencies
+      ContentUri: ./layers/dependencies
+      LicenseInfo: 'MIT'
+      CompatibleArchitectures:
+        - x86_64
+        - arm64
+      CompatibleRuntimes:
+        - nodejs14.x
+        - nodejs16.x
+        - nodejs18.x
+      RetentionPolicy: Retain
+
+  MyApiCertificate:
+    Type: 'AWS::CertificateManager::Certificate'
+    Condition: UseDomainName
+    Properties:
+      DomainName: !Sub '*.${DomainName}'
+      DomainValidationOptions:
+        - DomainName: !Sub '*.${DomainName}'
+          ValidationDomain: !Ref DomainName
+      SubjectAlternativeNames:
+        - !Ref DomainName
+
+  MyApiDomainName:
+    Type: 'AWS::ApiGateway::DomainName'
+    Condition: UseDomainName
+    Properties:
+      CertificateArn: !Ref MyApiCertificate
+      DomainName: !Ref DomainName
+
+  MyApiBasePathMapping:
+    Type: 'AWS::ApiGateway::BasePathMapping'
+    Condition: UseDomainName
+    Properties:
+      RestApiId: !Ref ExpressApi
+      DomainName: !Ref MyApiDomainName
+      BasePath: '(none)'
+      Stage: !Ref Stage
+
+  Route53HostedZone:
+    Type: AWS::Route53::HostedZone
+    Condition: UseDomainName
+    Properties:
+      Name: !Ref DomainName
+
+  MyApiRoute53RecordSetGroup:
+    Type: AWS::Route53::RecordSetGroup
+    Condition: UseDomainName
+    Properties:
+      HostedZoneId: !Ref Route53HostedZone
+      RecordSets:
+        - Name: !Sub ${DomainName}.
+          Type: A
+          AliasTarget:
+            EvaluateTargetHealth: false
+            HostedZoneId: !GetAtt MyApiDomainName.DistributionHostedZoneId
+            DNSName: !GetAtt MyApiDomainName.DistributionDomainName
+
+Outputs:
+  LambdaFunctionConsoleUrl:
+    Description: Console URL for the Lambda Function.
+    Value: !Sub https://${AWS::Region}.console.aws.amazon.com/lambda/home?region=${AWS::Region}#/functions/${ExpressLambdaFunction}
+
+  ApiGatewayApiConsoleUrl:
+    Description: Console URL for the API Gateway API's Stage.
+    Value: !Sub https://${AWS::Region}.console.aws.amazon.com/apigateway/home?region=${AWS::Region}#/apis/${ExpressApi}/stages/${Stage}
+
+  ApiUrl:
+    Description:
+      Invoke URL for your API. Clicking this link will perform a GET request
+      on the root resource of your API.
+    Value: !Sub https://${ExpressApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}/
+
+  LambdaFunctionName:
+    Description: Name of the Serverless Express Lambda Function
+    Value: !Ref ExpressLambdaFunction

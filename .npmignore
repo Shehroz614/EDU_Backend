@@ -1,0 +1,14 @@
+.aws/
+.vscode/
+.idea/
+src/
+test/
+nodemon.json
+.gitignore
+LICENSE
+env.json
+test.html
+README.md
+tsconfig.json
+yarn.lock
+package-lock.json

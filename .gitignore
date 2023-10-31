@@ -1,0 +1,12 @@
+node_modules
+.env
+test.js
+.vscode/
+.idea
+Desktop.ini
+build
+.aws
+yarn.lock
+.github/
+*.packaged.yaml
+.DS_Store

@@ -1,0 +1,28 @@
+{
+  "scripts": {
+    "build-deps": "rm -rf ../node_modules && npm i --legacy-peer-deps --production && npm install --arch=x64 --platform=linux sharp && npx node-prune && npx modclean -n default:safe,default:caution -r --ignore *.node"
+  },
+  "dependencies": {
+    "@sendgrid/mail": "^7.7.0",
+    "@vendia/serverless-express": "^4.10.3",
+    "accesscontrol": "^2.2.1",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "dayjs": "^1.11.9",
+    "express": "^4.17.1",
+    "express-rate-limit": "^6.7.0",
+    "firebase-admin": "^9.4.1",
+    "mongoose": "^7.0.2",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "node-fetch": "^2.6.7",
+    "oci-common": "^2.59.0",
+    "oci-mediaservices": "^2.61.0",
+    "oci-objectstorage": "^2.53.1",
+    "pdfkit": "^0.13.0",
+    "request-ip": "^2.1.3",
+    "sharp": "^0.32.6",
+    "stripe": "12.11.0",
+    "uuid": "^8.3.2"
+  }
+}
